@@ -142,7 +142,7 @@ class ExcelBuilder extends BuilderSupport {
               sheet.setColumnView(i, (width < 1.0 ? width * 100 : width) as int)
             }
           } else {
-            if (attributes?.widthAutoSize) {
+            if (attributes?.widthAutoSize!=false) {
               for (int i = 0; i < attributes.numberOfFields; i++) {
                 sheet.setColumnView(i, new CellView(autosize: true))
               }
@@ -169,8 +169,11 @@ class ExcelBuilder extends BuilderSupport {
             value = new Label(attributes?.column, attributes?.row, attributes?.value?.toString())
           }
 
-          if (attributes?.format && formats.containsKey(attributes?.format)) {
-            value.setCellFormat(formats[attributes.format])
+          if(attributes?.format){
+            if(attributes?.format instanceof WritableCellFormat)
+              value.setCellFormat(attributes.format)
+            else if(formats.containsKey(attributes?.format))
+              value.setCellFormat(formats[attributes.format])
           }
 
           // Create hyperlinks for values beginning with http

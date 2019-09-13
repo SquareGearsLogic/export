@@ -40,7 +40,7 @@ class DefaultExcelExporter extends AbstractExporter {
         workbook(outputStream: outputStream) {
           for (int j = 1; j <= sheets; j++) {
             def dataPerSheet = data.subList(startIndex, endIndex)
-            sheet(name: getParameters().get("title") + "-$j" ?: "Export-$j", widths: getParameters().get("column.widths"), numberOfFields: fields.size(), widthAutoSize: getParameters().get("column.width.autoSize")) {
+            sheet(name: getParameters().get("title") + "-$j" ?: "Export-$j", widths: getParameters().get("column.widths"), numberOfFields: fields.size(), widthAutoSize: getParameters().get("column.width.autoSize")!=false) {
 
               format(name: "title") {
                 Alignment alignment = Alignment.GENERAL
@@ -84,10 +84,13 @@ class DefaultExcelExporter extends AbstractExporter {
                 rowIndex++
               }
 
+              final Map columnFormats=getParameters().get("column.formats")
               //Rows
               dataPerSheet.eachWithIndex { object, k ->
-                String format = useZebraStyle ? ((k % 2) == 0 ? "even" : "odd") : ""
+
                 fields.eachWithIndex { field, i ->
+                  def format = useZebraStyle ? ( (k % 2) == 0 ? "even" : "odd" ) : ''
+                  format = columnFormats?.containsKey(field)?columnFormats[field]:format
                   Object value = getValue(object, field)
                   cell(row: k + rowIndex, column: i, value: value, format: format)
                 }
