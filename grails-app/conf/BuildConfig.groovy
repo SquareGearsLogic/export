@@ -22,18 +22,21 @@ grails.project.dependency.resolution = {
     dependencies {
         compile 'net.sf.opencsv:opencsv:2.3'
 
-        compile 'com.lowagie:itext:2.1.7'
-        compile("com.lowagie:itext-rtf:2.1.7")
-        runtime 'xerces:xercesImpl:2.9.0'
+        compile ("com.lowagie:itext:2.1.7") { 		// Birt 4.3 issue
+				  excludes 'bcprov-jdk14'
+				  excludes 'bcmail-jdk14'
+				}
+        compile ('com.lowagie:itext-rtf:2.1.7') { 	// Birt 4.3 issue
+				  excludes 'bcprov-jdk14'
+				  excludes 'bcmail-jdk14'
+				}
+        runtime 'xerces:xercesImpl:2.9.1'
         compile 'org.odftoolkit:simple-odf:0.6.6'
         compile 'net.sourceforge.jexcelapi:jxl:2.6.12'
         compile 'commons-beanutils:commons-beanutils:1.8.3'
     }
 
     plugins {
-        build(":tomcat:7.0.52.1",
-                ":release:3.0.1") {
-            export = false
-        }
+
     }
 }
