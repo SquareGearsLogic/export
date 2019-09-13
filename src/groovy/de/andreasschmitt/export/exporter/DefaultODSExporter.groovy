@@ -1,8 +1,8 @@
 package de.andreasschmitt.export.exporter
 
-import org.odftoolkit.simple.SpreadsheetDocument;
-import org.odftoolkit.simple.table.Cell;
-import org.odftoolkit.simple.table.Table;
+import org.odftoolkit.simple.SpreadsheetDocument
+import org.odftoolkit.simple.table.Cell
+import org.odftoolkit.simple.table.Table
 
 /**
  * @author Andreas Schmitt

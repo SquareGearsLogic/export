@@ -12,6 +12,11 @@ class ExportService {
   def exporterFactory
   def grailsApplication
 
+  void setupResponse(String type, HttpServletResponse response, String filename, String extension){
+    response.contentType = grailsApplication.config.grails.mime.types[type]
+    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.${extension}\"")
+  }
+
   void export(String type, OutputStream outputStream, List objects, Map formatters, Map parameters) throws ExportingException {
     export(type, outputStream, objects, null, null, formatters, parameters)
   }
@@ -26,9 +31,7 @@ class ExportService {
   }
 
   void export(String type, HttpServletResponse response, String filename, String extension, List objects, List fields, Map labels, Map formatters, Map parameters) throws ExportingException {
-    // Setup response
-    response.contentType = grailsApplication.config.grails.mime.types[type]
-    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.${extension}\"")
+    setupResponse(type, response, filename, extension)
 
     Exporter exporter = exporterFactory.createExporter(type, fields, labels, formatters, parameters)
     exporter.export(response.outputStream, objects)

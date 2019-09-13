@@ -2,7 +2,6 @@ package de.andreasschmitt.export.exporter
 
 import com.lowagie.text.Cell
 import com.lowagie.text.Document
-import com.lowagie.text.DocumentException
 import com.lowagie.text.Font
 import com.lowagie.text.FontFactory
 import com.lowagie.text.PageSize

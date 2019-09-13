@@ -1,7 +1,6 @@
 package de.andreasschmitt.export.exporter
 
 import com.lowagie.text.Document
-import com.lowagie.text.DocumentException
 import com.lowagie.text.PageSize
 import com.lowagie.text.Paragraph
 import com.lowagie.text.pdf.PdfPTable
@@ -15,7 +14,6 @@ import com.lowagie.text.Phrase
 import com.lowagie.text.Element
 import com.lowagie.text.Rectangle
 import java.awt.Color
-import java.util.Map;
 import com.lowagie.text.Image
 
 /**

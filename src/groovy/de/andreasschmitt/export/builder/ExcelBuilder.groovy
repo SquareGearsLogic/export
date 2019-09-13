@@ -1,32 +1,21 @@
 package de.andreasschmitt.export.builder
 
-import groovy.util.BuilderSupport
+import groovy.util.logging.Log4j
 import jxl.CellView
 import jxl.format.Border
 import jxl.format.BorderLineStyle
-import jxl.format.CellFormat
 import jxl.format.Colour
-import jxl.format.Pattern
-import jxl.write.WritableFont
 import jxl.Workbook
 import jxl.write.Label
 import jxl.write.Number
 import jxl.write.DateTime
-import jxl.write.WritableCellFormat
-import jxl.write.WritableFont
 import jxl.write.WritableSheet
 import jxl.write.WritableWorkbook
-import jxl.write.WriteException
-import jxl.write.biff.RowsExceededException
-import jxl.write.WritableFont
-import jxl.format.UnderlineStyle
 import jxl.format.UnderlineStyle
 import jxl.write.WritableCellFormat
 import jxl.write.biff.CellValue
 import jxl.write.WritableFont
 import jxl.write.WritableHyperlink
-
-import org.apache.commons.logging.*
 
 /**
  * @author Andreas Schmitt
@@ -62,6 +51,7 @@ import org.apache.commons.logging.*
  *
  */
 
+@Log4j
 class ExcelBuilder extends BuilderSupport {
 
   WritableWorkbook workbook
@@ -69,8 +59,6 @@ class ExcelBuilder extends BuilderSupport {
 
   String format
   Map formats = [:]
-
-  private static Log log = LogFactory.getLog(ExcelBuilder)
 
   /**
    * This method isn't implemented.
@@ -137,15 +125,13 @@ class ExcelBuilder extends BuilderSupport {
         try {
           log.debug("Creating sheet")
           sheet = workbook.createSheet(attributes?.name, workbook.getNumberOfSheets())
-          if (attributes?.widths && !attributes?.widths?.isEmpty()) {
-            attributes.widths.eachWithIndex { width, i ->
-              sheet.setColumnView(i, (width < 1.0 ? width * 100 : width) as int)
-            }
-          } else {
-            if (attributes?.widthAutoSize!=false) {
-              for (int i = 0; i < attributes.numberOfFields; i++) {
+          if (attributes?.widthAutoSize!=false) {
+            for (int i = 0; i < attributes.numberOfFields; i++) {
+              Integer width = !attributes.widths?.isEmpty() ? attributes.widths.getAt(i) : null
+              if (width!=null)
+                sheet.setColumnView(i, (width < 1.0 ? width * 100 : width) as int)
+              else if (attributes?.widthAutoSize!=false)
                 sheet.setColumnView(i, new CellView(autosize: true))
-              }
             }
           }
         }
@@ -241,7 +227,7 @@ class ExcelBuilder extends BuilderSupport {
         }
         catch (Exception e) {
           println "Error!"
-          e.printStackTrace();
+          e.printStackTrace()
         }
         break
       case "mergeCells":
