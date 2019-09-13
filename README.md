@@ -44,14 +44,16 @@ clean, run, watch for this notification:
 cancel once you see it... or wait to fail build because of the missing plugin.
 
 **Option 1)** local/dev installation:
-simply unzip files to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-2/```
+
+Simply unzip files to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-2/```
 and add line somewhere at the top of your BuildConfig.groovy, outside of plugins scope
 ```
 grails.plugin.location.export="PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-2"
 ```
 For any dependency issues see BuildConfig.groovy in plugin directory.
 
-**Option 2)** install zip into local maven repository and install plugin from there, lake you normally do:
+**Option 2)** install zip into local maven repository and install plugin from there, like you normally do:
+
 If you running Grails < v2.3 you can use 
 ```
 grails install-plugin
@@ -67,6 +69,7 @@ Linux: ~/.m2/repository/org/grails/plugins/export/1.7-2.0.0-2/
 Windows: %HOMEPATH%\.m2\repository\org\grails\plugins\export\1.7-2.0.0-2\
 ```
 and replace pom file with the one from release (If anyone knows how to integrate pom into zip - please let me know).
+
 Add new plugin to your BuildConfig.groovy normally:
 ```
     compile (':export:1.7-2.0.0-2') {
