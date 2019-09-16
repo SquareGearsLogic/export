@@ -65,7 +65,7 @@ exportService.export('excel', response.outputStream, myRows, fields, labels, for
 
 Installation or Upgrade:
 -----------
-Get .zip and .pom files [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-2)
+Get .zip and .pom files [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-3)
 Remove 'export:1.6' from your BuildConfig.groovy
 clean, run, watch for this notification:
 ```"Uninstalled plugin (export)"```
@@ -73,10 +73,10 @@ cancel once you see it... or wait to fail build because of the missing plugin.
 
 **Option 1)** local/dev installation:
 
-Simply unzip files to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-2/```
+Simply unzip files to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-3/```
 and add line somewhere at the top of your BuildConfig.groovy, outside of plugins scope
 ```
-grails.plugin.location.export="PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-2"
+grails.plugin.location.export="PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-3"
 ```
 For any dependency issues see BuildConfig.groovy in plugin directory.
 
@@ -89,18 +89,18 @@ grails install-plugin
 
 If you running Grails between v2.3 and 3.0 do this:
 ```
-mvn install:install-file -Dfile=export-1.7-2.0.0-2.zip -DgroupId=org.grails.plugins -DartifactId=export -Dversion=1.7-2.0.0-2 -Dpackaging=zip
+mvn install:install-file -Dfile=export-1.7-2.0.0-3.zip -DgroupId=org.grails.plugins -DartifactId=export -Dversion=1.7-2.0.0-3 -Dpackaging=zip
 ```
 go to folder
 ```
-Linux: ~/.m2/repository/org/grails/plugins/export/1.7-2.0.0-2/
-Windows: %HOMEPATH%\.m2\repository\org\grails\plugins\export\1.7-2.0.0-2\
+Linux: ~/.m2/repository/org/grails/plugins/export/1.7-2.0.0-3/
+Windows: %HOMEPATH%\.m2\repository\org\grails\plugins\export\1.7-2.0.0-3\
 ```
 and replace pom file with the one from release (If anyone knows how to integrate pom into zip - please let me know).
 
 Add new plugin to your BuildConfig.groovy normally:
 ```
-    compile (':export:1.7-2.0.0-2') {
+    compile (':export:1.7-2.0.0-3') {
 		excludes 'bcprov-jdk14', 'bcmail-jdk14'    // to support birt-report:4.3 dependency hell
     }
 ```
