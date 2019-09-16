@@ -8,29 +8,56 @@ and latest features from
 
 Why?
 -----------
-Some features of underlying library that I need are missing in this plugin or not implemented as I want,
+Some Excel features of underlying library that I need are missing in this plugin or not implemented as I want,
 like pages, column styling, etc. 
 Also, I'm still working with grails 2, but latest features of 2.0.0, that works only with Grails3, are not merged back to Grails2 version...
 So, first commit of this branch is a pure merge of dead 1.7 and latest 2.0.0.
-A new branch will be spawned for every upgrade of base line (if it ever happends at all).
+A new branch will be spawned for every upgrade of base line (if it ever happens at all).
 
 What are the new features?
 -----------
-1.7-2.0.0-2:
-- I see no reason why column autosizing is not turned-on by default: it perfectly resizes small columns, and doesn't resize large collumns too much. So it's on by default now. To disable it set ```Map parameters=['column.width.autoSize':false]``` 
-- supports column formating. Here is a quick example how to assign "currenty" type to a column:
-```groovy
-    Map labels = ['paymentAmt':'Payment Amount']
-    List fields = ['paymentAmt']
-Map parameters = ["column.formats": [paymentAmt: new WritableCellFormat(NumberFormats.ACCOUNTING_FLOAT)]]
-def formatters = [paymentAmt : { domain, value ->
-    String strVal = "${value}".replace('fr.','').replaceAll(/[^\d.]/,'')
-    return new BigDecimal(strVal?:'0')
-  }]
+1.7-2.0.0-3:
+- Chained header and column formatting, like 
+```
+def cellFormat = (new ExcelFormat()).TAHOMA().bold().noBold().struckout().VIOLET().italic().pointSize(10).wrapText().CENTRE().TOP().MINUS_45().backColor(Colour.AQUA).MIDDLE()
+```
+It is possible to set that format for all headers ```"header.format":format``` and/or individually ```"header.formats": [1:column1headerFormat,5:column5headerFormat]``` 
+- Change column size individually ```"column.widths": [null, 40]``` - here we set it only for second one, the rest will be autosized.
+- format can handle cell value type (currency bundles text formatter as well!):
+```
+def textFormat = new ExcelFormat()
+def currencyFormat = new ExcelFormat(NumberFormats.ACCOUNTING_FLOAT)
+def dateTimeFormat = new ExcelFormat(DateFormats.FORMAT9)
+```
+- new interface to handle multiple sheets (only Excel implemented for now):
+```
+Map sheets = ['first sheet title': [fields: fields, labels: labels, rows: rows1,
+                                    "column.formats": [ someFieldName: (new ExcelFormat()).TIMES() ]]
+              'another sheet': [rows:rows2]]
 
-    response.contentType = Holders.config.grails.mime.types[params.exportFormat]
-    response.setHeader("Content-disposition", "attachment; filename=test.xls")
-    exportService.export('excel', response.outputStream, myList, fields, labels, formatters, parameters)
+exportService.export(mimeType, response, sheets)
+// OR
+//setupResponse(type, response, filename, extension)
+//exportService.export(mimeType, response.outputStream, sheets)
+```
+- added ```import groovy.util.logging.Log4j``` annotation
+
+2.1.7-2.0.0-2:
+- I see no reason why column autosizing is not turned-on by default: it perfectly resizes small columns, and doesn't resize large columns too much. So it's on by default now. To disable it set ```Map parameters=['column.width.autoSize':false]``` 
+- supports column formating. Here is a quick example how to assign "currency" type to a column:
+```groovy
+Map labels = ['paymentAmt':'Payment Amount']
+List fields = ['paymentAmt']
+Map parameters = ['column.formats': ['paymentAmt': new WritableCellFormat(NumberFormats.ACCOUNTING_FLOAT)]]
+def formatters = ['paymentAmt' : { domain, value ->
+                                 String strVal = "${value}".replace('fr.','').replaceAll(/[^\d.]/,'')
+                                 return new BigDecimal(strVal?:'0')
+                               }
+				  ]
+List myRows = [['paymentAmt':'$9,876.5432'], ['paymentAmt':'$1,234.5678']]
+response.contentType = Holders.config.grails.mime.types[params.exportFormat]
+response.setHeader("Content-disposition", "attachment; filename=test.xls")
+exportService.export('excel', response.outputStream, myRows, fields, labels, formatters, parameters)
 ```
 1.7-2.0.0-1: 
 - initial merge of 1.7 and 2.0.0
@@ -38,6 +65,7 @@ def formatters = [paymentAmt : { domain, value ->
 
 Installation or Upgrade:
 -----------
+Get .zip and .pom files [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-2)
 Remove 'export:1.6' from your BuildConfig.groovy
 clean, run, watch for this notification:
 ```"Uninstalled plugin (export)"```
@@ -73,6 +101,6 @@ and replace pom file with the one from release (If anyone knows how to integrate
 Add new plugin to your BuildConfig.groovy normally:
 ```
     compile (':export:1.7-2.0.0-2') {
-      excludes 'itext', 'itext-rtf'    // to support birt-report:4.3 dependency hell
+		excludes 'bcprov-jdk14', 'bcmail-jdk14'    // to support birt-report:4.3 dependency hell
     }
 ```

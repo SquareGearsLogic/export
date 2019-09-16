@@ -14,9 +14,17 @@ abstract class AbstractExporter implements Exporter {
   void export(OutputStream outputStream, List data) throws ExportingException {
     if (exportFields?.size() > 0) {
       exportData(outputStream, data, exportFields)
-    } else {
+    } else if(data[0]!=null) {
       exportData(outputStream, data, ExporterUtil.getFields(data[0]))
     }
+  }
+
+  void export(OutputStream outputStream, Map sheets) throws ExportingException {
+    sheets.each{title, Map config->
+      if (!config.containsKey('fields') && config.containsKey('rows') && config.rows[0]!=null)
+        config.fields = ExporterUtil.getFields(config.rows[0])
+    }
+    exportSheets(outputStream, sheets)
   }
 
   protected String getLabel(String field) {
@@ -52,5 +60,7 @@ abstract class AbstractExporter implements Exporter {
   }
 
   abstract protected void exportData(OutputStream outputStream, List data, List fields) throws ExportingException
+
+  abstract protected void exportSheets(OutputStream outputStream, Map sheets) throws ExportingException
 
 }

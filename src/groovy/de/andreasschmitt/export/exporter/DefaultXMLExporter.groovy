@@ -47,6 +47,10 @@ class DefaultXMLExporter extends AbstractExporter {
     }
   }
 
+  protected void exportSheets(OutputStream outputStream, Map sheets) throws ExportingException {
+    // TODO
+  }
+
   private String properCase(String value) {
     if (value?.length() >= 2) {
       return "${value[0].toLowerCase()}${value.substring(1)}"

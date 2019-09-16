@@ -4,7 +4,6 @@ import de.andreasschmitt.export.builder.ExcelBuilder
 import groovy.util.logging.Log4j
 import jxl.format.Alignment
 import jxl.format.Colour
-import jxl.write.WritableCellFormat
 
 /**
  * @author Andreas Schmitt
@@ -13,11 +12,19 @@ import jxl.write.WritableCellFormat
 @Log4j
 class DefaultExcelExporter extends AbstractExporter {
 
-  private static final int MAX_PER_SHEET = 60 //000 // See https://github.com/gpc/export/pull/23
+  private static final int MAX_PER_SHEET = 60000 // See https://github.com/gpc/export/pull/23
 
+  /**
+   * Legacy interface that spills a single sheet into a workbook.
+   * @param outputStream  - Where to;
+   * @param data          - List of Objects(Maps) rows in sheet;
+   * @param fields        - List<String> header names.
+   * @throws ExportingException
+   * TODO: optimize this code with exportSheets
+   */
   protected void exportData(OutputStream outputStream, List data, List fields) throws ExportingException {
     try {
-      def builder = new ExcelBuilder()
+      ExcelBuilder builder = new ExcelBuilder()
 
       // Enable/Disable header output
       boolean isHeaderEnabled = true
@@ -30,29 +37,19 @@ class DefaultExcelExporter extends AbstractExporter {
         useZebraStyle = getParameters().get("zebraStyle.enabled")
       }
 
+      boolean widthAutoSize = getParameters().get("column.width.autoSize")!=false
+
       int maxPerSheet = MAX_PER_SHEET
       if (getParameters().containsKey("max.rows.persheet")) {
         maxPerSheet = getParameters().get("max.rows.persheet")
         maxPerSheet = maxPerSheet < MAX_PER_SHEET ? maxPerSheet : MAX_PER_SHEET
       }
 
-      def (sheets, limitPerSheet) = computeSheetsAndLimit(data, maxPerSheet)
-      def startIndex = 0
-      def endIndex = limitPerSheet
-
+      String title = getParameters().get("title")
       builder {
         workbook(outputStream: outputStream) {
-          for (int j = 1; j <= sheets; j++) {
-            def dataPerSheet = data.subList(startIndex, endIndex)
-
-            processSheet (getDelegate(), getParameters().get("title") + "-$j" ?: "Export-$j",
-                          dataPerSheet, fields,
-                          isHeaderEnabled, useZebraStyle,
-                          getParameters().get("column.width.autoSize")!=false)
-
-            startIndex = endIndex
-            endIndex = endIndex + limitPerSheet > data.size() ? data.size() : endIndex + limitPerSheet
-          }
+          processSheet(getDelegate() as ExcelBuilder, title, data, fields,
+              isHeaderEnabled, useZebraStyle, widthAutoSize, maxPerSheet, getParameters())
         }
       }
 
@@ -63,17 +60,85 @@ class DefaultExcelExporter extends AbstractExporter {
     }
   }
 
+  /**
+   * Writes multiple sheets into a workbook
+   * @param outputStream  - Where to;
+   * @param sheets        - Map of sheet title and its configuration, that is also a Map of:
+   *        ~ fields                - row Object(Map) fields to export;
+   *        ~ labels                - aliases for fields;
+   *        ~ header.enabled        - boolean show/hide header;
+   *        ~ titles.mergeCells     - merge all header cells;
+   *        ~ zebraStyle.enabled    - boolean striped table;
+   *        ~ max.rows.persheet     - boolean breaks down data rows into multiple enumerated sheets with same title (default is MAX_PER_SHEET);
+   *        ~ column.width.autoSize - boolean default is true;
+   *        ~ column.widths         - list of column widths, Nulls will apply 'column.width.autoSize';
+   *        ~ rows                  - List of Objects(Maps) rows in sheet;
+   *        ~ column.formats        - ExcelFormat type of cell, like date, currency, text, etc... (default is text);
+   *        ~ column.formatters     - Closure that formats cell value { domain, value -> return value };
+   *        ~ header.format         - ExcelFormat to format all headers same way;
+   *        ~ header.formats        - Map of header index and its ExcelFormat, so it's a 'header.format' per column.
+   * @throws ExportingException
+   */
+  protected void exportSheets(OutputStream outputStream, Map sheets) throws ExportingException {
+    ExcelBuilder builder = new ExcelBuilder()
+    builder {
+      workbook(outputStream: outputStream) {
+        ExcelBuilder currentWorkbook = getDelegate()
+        sheets.each { title, Map sheetParams ->
+          boolean isHeaderEnabled = true
+          if (sheetParams.containsKey("header.enabled")) {
+            isHeaderEnabled = sheetParams.get("header.enabled")
+          }
+
+          boolean useZebraStyle = false
+          if (sheetParams.containsKey("zebraStyle.enabled")) {
+            useZebraStyle = sheetParams.get("zebraStyle.enabled")
+          }
+
+          boolean widthAutoSize = sheetParams.get("column.width.autoSize")!=false
+
+          int maxPerSheet = MAX_PER_SHEET
+          if (sheetParams.containsKey("max.rows.persheet")) {
+            maxPerSheet = sheetParams.get("max.rows.persheet")
+            maxPerSheet = maxPerSheet < MAX_PER_SHEET ? maxPerSheet : MAX_PER_SHEET
+          }
+
+          processSheet(currentWorkbook, (title?:"Export") as String, sheetParams.rows as List, sheetParams.fields as List,
+              isHeaderEnabled, useZebraStyle, widthAutoSize, maxPerSheet, sheetParams)
+        }
+      }
+    }
+
+    builder.write()
+  }
+
   private void processSheet(ExcelBuilder workbook, String sheetName, List data, List fields,
-                            boolean isHeaderEnabled, boolean useZebraStyle, boolean widthAutoSize){
+                            boolean isHeaderEnabled, boolean useZebraStyle, boolean widthAutoSize, int maxPerSheet, Map sheetParams){
+    def (sheets, limitPerSheet) = computeSheetsAndLimit(data, maxPerSheet)
+    def startIndex = 0
+    def endIndex = limitPerSheet
+    for (int j = 1; j <= sheets; j++) {
+      def dataPerSheet = data.subList(startIndex, endIndex)
+
+      processMaxRowsPerSheet (workbook, sheetName + (sheets>1?"-$j":''),
+          dataPerSheet, fields, isHeaderEnabled, useZebraStyle, widthAutoSize, sheetParams)
+
+      startIndex = endIndex
+      endIndex = endIndex + limitPerSheet > data.size() ? data.size() : endIndex + limitPerSheet
+    }
+  }
+
+  private void processMaxRowsPerSheet(ExcelBuilder workbook, String sheetName, List data, List fields,
+                            boolean isHeaderEnabled, boolean useZebraStyle, boolean widthAutoSize, Map sheetParams){
     workbook.sheet (name: sheetName,
-                    widths: getParameters().get("column.widths"),
+                    widths: sheetParams.get("column.widths"),
                     numberOfFields: fields.size(),
                     widthAutoSize: widthAutoSize) {
 
       format(name: "title") {
         Alignment alignment = Alignment.GENERAL
-        if (getParameters().containsKey('titles.alignment')) {
-          alignment = Alignment."${getParameters().get('titles.alignment')}"
+        if (sheetParams.containsKey('titles.alignment')) {
+          alignment = Alignment."${sheetParams.get('titles.alignment')}"
         }
         font(name: "arial", bold: true, size: 14, alignment: alignment)
       }
@@ -96,7 +161,7 @@ class DefaultExcelExporter extends AbstractExporter {
       int rowIndex = 0
 
       // Option for titles on top of data table
-      def titles = getParameters().get("titles")
+      def titles = sheetParams.get("titles")
       titles.each {
         cell(row: rowIndex, column: 0, value: it, format: "title")
         rowIndex++
@@ -104,12 +169,12 @@ class DefaultExcelExporter extends AbstractExporter {
 
       //Create header
       if (isHeaderEnabled) {
-        final def headerFormat=getParameters().get("header.format")
-        final Map headerFormats=getParameters().get("header.formats")
+        final def headerFormat=sheetParams.get("header.format")
+        final Map headerFormats=sheetParams.get("header.formats")
         //WritableCellFormat format = headerFormats.containsKey() headerFormat
 
         fields.eachWithIndex { field, index ->
-          def format = headerFormats.get(index)?:headerFormat
+          def format = headerFormats?.get(index)?:headerFormat
           String value = getLabel(field)
           cell(row: rowIndex, column: index, value: value, format: format?:"header")
         }
@@ -117,7 +182,7 @@ class DefaultExcelExporter extends AbstractExporter {
         rowIndex++
       }
 
-      final Map columnFormats=getParameters().get("column.formats")
+      final Map columnFormats=sheetParams.get("column.formats")
       //Rows
       data.eachWithIndex { object, k ->
 
@@ -132,7 +197,7 @@ class DefaultExcelExporter extends AbstractExporter {
         }
       }
 
-      if (getParameters().get('titles.mergeCells')) {
+      if (sheetParams.get('titles.mergeCells')) {
         //Merge title cells
         titles.eachWithIndex { title, index ->
           mergeCells(startColumn: 0, startRow: index, endColumn: fields.size(), endRow: index)

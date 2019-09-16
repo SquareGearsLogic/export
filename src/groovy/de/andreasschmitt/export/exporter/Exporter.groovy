@@ -24,4 +24,6 @@ interface Exporter {
 
   void export(OutputStream outputStream, List data) throws ExportingException
 
+  void export(OutputStream outputStream, Map data) throws ExportingException
+
 }

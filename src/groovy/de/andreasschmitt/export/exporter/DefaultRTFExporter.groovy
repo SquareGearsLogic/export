@@ -122,6 +122,10 @@ class DefaultRTFExporter extends AbstractExporter {
     }
   }
 
+  protected void exportSheets(OutputStream outputStream, Map sheets) throws ExportingException {
+    // TODO
+  }
+
   // Create font from parameters
   private Font createFont(String type, String family, String encoding, int fontSize, int style) {
     // Font size

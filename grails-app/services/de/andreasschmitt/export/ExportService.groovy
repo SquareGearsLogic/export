@@ -32,9 +32,17 @@ class ExportService {
 
   void export(String type, HttpServletResponse response, String filename, String extension, List objects, List fields, Map labels, Map formatters, Map parameters) throws ExportingException {
     setupResponse(type, response, filename, extension)
+    export(type, response.outputStream, objects, fields, labels, formatters, parameters)
+  }
 
-    Exporter exporter = exporterFactory.createExporter(type, fields, labels, formatters, parameters)
-    exporter.export(response.outputStream, objects)
+  void export(String type, HttpServletResponse response, String filename, String extension, Map sheets) throws ExportingException {
+    setupResponse(type, response, filename, extension)
+    export(type, response.outputStream, sheets)
+  }
+
+  void export(String type, OutputStream outputStream, Map sheets) throws ExportingException {
+    Exporter exporter = exporterFactory.createExporter(type, [''], [:], [:], [:])
+    exporter.export(outputStream, sheets)
   }
 
 }

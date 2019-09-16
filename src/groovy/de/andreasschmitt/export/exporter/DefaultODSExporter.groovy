@@ -48,4 +48,8 @@ class DefaultODSExporter extends AbstractExporter {
       throw new ExportingException("Error during export", e)
     }
   }
+
+  protected void exportSheets(OutputStream outputStream, Map sheets) throws ExportingException {
+    // TODO
+  }
 }
