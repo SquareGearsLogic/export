@@ -18,19 +18,19 @@ What are the new features?
 -----------
 1.7-2.0.0-3:
 - Chained header and column formatting, like 
-```
+```groovy
 def cellFormat = (new ExcelFormat()).TAHOMA().bold().noBold().struckout().VIOLET().italic().pointSize(10).wrapText().CENTRE().TOP().MINUS_45().backColor(Colour.AQUA).MIDDLE()
 ```
 It is possible to set that format for all headers ```"header.format":format``` and/or individually ```"header.formats": [1:column1headerFormat,5:column5headerFormat]``` 
 - Change column size individually ```"column.widths": [null, 40]``` - here we set it only for second one, the rest will be autosized.
 - format can handle cell value type (currency bundles text formatter as well!):
-```
+```groovy
 def textFormat = new ExcelFormat()
 def currencyFormat = new ExcelFormat(NumberFormats.ACCOUNTING_FLOAT)
 def dateTimeFormat = new ExcelFormat(DateFormats.FORMAT9)
 ```
 - new interface to handle multiple sheets (only Excel implemented for now):
-```
+```groovy
 Map sheets = ['first sheet title': [fields: fields, labels: labels, rows: rows1,
                                     "column.formats": [ someFieldName: (new ExcelFormat()).TIMES() ]]
               'another sheet': [rows:rows2]]
@@ -87,7 +87,8 @@ If you running Grails < v2.3 you can use
 grails install-plugin
 ```
 
-If you running Grails between v2.3 and 3.0 do this:
+If you running Grails between v2.3 and 3.0, you should use maven itself.
+There is a script attached to release "install_plugin_export.bat" that basically automates the following process:
 ```
 mvn install:install-file -Dfile=export-1.7-2.0.0-3.zip -DgroupId=org.grails.plugins -DartifactId=export -Dversion=1.7-2.0.0-3 -Dpackaging=zip
 ```
