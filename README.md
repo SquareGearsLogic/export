@@ -1,16 +1,18 @@
 Grails2 Export Plugin
 ====================
 
-Forked merge of original
-[1.7](https://github.com/gpc/export/tree/grails2) 
-and latest features from 
-[2.0.0](https://github.com/gpc/export)
+This is a forked merge of 
+[v1.7](https://github.com/gpc/export/tree/grails2) (for Grails2)
+and 
+[v2.0.0](https://github.com/gpc/export) (for grails3) with some extra bells and whistles.  
+- [Original v2.0.0 documentation](http://gpc.github.io/export/)  
+- Original v1.6 for Grails2 is the latest [available on maven](https://mvnrepository.com/artifact/org.grails.plugins/export/1.6)
 
 Why?
 -----------
 Some Excel features of underlying library that I need are missing in this plugin or not implemented as I want, 
 like pages, column styling, etc.  
-Also, I'm still working with grails 2, but latest features of 2.0.0, that works only with Grails3, are not merged back to Grails2 version...  
+Also, I'm still working with grails 2, but latest features of 2.0.0, that works only with Grails3, are not backported to Grails2 version...  
 So, first commit of this branch is a pure merge of dead 1.7 and latest 2.0.0.
 A new branch will be spawned for every upgrade of base line (if it ever happens at all).
 
