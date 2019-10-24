@@ -8,9 +8,9 @@ and latest features from
 
 Why?
 -----------
-Some Excel features of underlying library that I need are missing in this plugin or not implemented as I want,
-like pages, column styling, etc. 
-Also, I'm still working with grails 2, but latest features of 2.0.0, that works only with Grails3, are not merged back to Grails2 version...
+Some Excel features of underlying library that I need are missing in this plugin or not implemented as I want, 
+like pages, column styling, etc.  
+Also, I'm still working with grails 2, but latest features of 2.0.0, that works only with Grails3, are not merged back to Grails2 version...  
 So, first commit of this branch is a pure merge of dead 1.7 and latest 2.0.0.
 A new branch will be spawned for every upgrade of base line (if it ever happens at all).
 
@@ -26,8 +26,8 @@ new ExcelFormat(..., { domain, value -> ... })
 ```groovy
 def cellFormat = (new ExcelFormat()).TAHOMA().bold().noBold().struckout().VIOLET().italic().pointSize(10).wrapText().CENTRE().TOP().MINUS_45().backColor(Colour.AQUA).MIDDLE()
 ```
-It is possible to set that format for all headers ```"header.format":format``` and/or individually ```"header.formats": [1:column1headerFormat,5:column5headerFormat]``` 
-- Change column size individually ```"column.widths": [null, 40]``` - here we set it only for second one, the rest will be autosized.
+It is possible to set that format for all headers ``"header.format":format`` and/or individually ``"header.formats": [1:column1headerFormat,5:column5headerFormat]`` 
+- Change column size individually ``"column.widths": [null, 40]`` - here we set it only for second one, the rest will be autosized.
 - format can handle cell value type (currency bundles text formatter as well!):
 ```groovy
 def textFormat = new ExcelFormat()
@@ -49,7 +49,7 @@ exportService.export(mimeType, response, sheets)
 - added ```import groovy.util.logging.Log4j``` annotation
 
 2.1.7-2.0.0-2:
-- I see no reason why column autosizing is not turned-on by default: it perfectly resizes small columns, and doesn't resize large columns too much. So it's on by default now. To disable it set ```Map parameters=['column.width.autoSize':false]``` 
+- I see no reason why column autosizing is not turned-on by default: it perfectly resizes small columns, and doesn't resize large columns too much. So it's on by default now. To disable it set ``Map parameters=['column.width.autoSize':false]`` 
 - supports column formating. Here is a quick example how to assign "currency" type to a column:
 ```groovy
 Map labels = ['paymentAmt':'Payment Amount']
@@ -71,43 +71,59 @@ exportService.export('excel', response.outputStream, myRows, fields, labels, for
 
 Installation or Upgrade:
 -----------
-Get .zip and .pom files [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-4)
-Remove 'export:1.6' from your BuildConfig.groovy
-clean, run, watch for this notification:
-```"Uninstalled plugin (export)"```
-cancel once you see it... or wait to fail build because of the missing plugin.
+This plugin is not available on maven yet, so...  
+For the first time, to migrate from original 1.6:  
+- Stop grails;
+- Remove 'export:1.6' from your BuildConfig.groovy;
+- Clean, run, watch for this notification "``Uninstalled plugin (export)``"
+cancel once you see it... or wait for build to fail due to missing plugin.
 
-**Option 1)** local/dev installation:
+**Option 1)** use "install_plugin_export.bat" that automates "option 2" process:  
 
-Simply unzip files to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-4/```
-and add line somewhere at the top of your BuildConfig.groovy, outside of plugins scope
+- Stop grails;
+- Add new plugin to your BuildConfig.groovy normally:
+```groovy
+    compile (':export:1.7-2.0.0-4') {
+		excludes 'bcprov-jdk14', 'bcmail-jdk14'    // to support birt-report:4.3 dependency hell
+    }
 ```
-grails.plugin.location.export="PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-4"
-```
-For any dependency issues see BuildConfig.groovy in plugin directory.
+- Download and run "install_plugin_export.bat" [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-4);
+- Run grails. It may prompt you for plugin upgrade - say yes.
 
-**Option 2)** install zip into local maven repository and install plugin from there, like you normally do:
+**Option 2)** manually install zip into local maven repository and install plugin from there, like you normally do:  
 
-If you running Grails < v2.3 you can use 
+- Get .zip and .pom files [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-4)
+- If you running Grails < v2.3 you can use 
 ```
 grails install-plugin
 ```
 
-If you running Grails between v2.3 and 3.0, you should use maven itself.
-There is a script attached to release "install_plugin_export.bat" that basically automates the following process:
+If you running Grails between v2.3 and 3.0, you should use maven itself:
 ```
 mvn install:install-file -Dfile=export-1.7-2.0.0-4.zip -DgroupId=org.grails.plugins -DartifactId=export -Dversion=1.7-2.0.0-4 -Dpackaging=zip
 ```
-go to folder
+- Go to folder
 ```
 Linux: ~/.m2/repository/org/grails/plugins/export/1.7-2.0.0-4/
 Windows: %HOMEPATH%\.m2\repository\org\grails\plugins\export\1.7-2.0.0-4\
 ```
 and replace pom file with the one from release (If anyone knows how to integrate pom into zip - please let me know).
 
-Add new plugin to your BuildConfig.groovy normally:
+- Add new plugin to your BuildConfig.groovy normally:
 ```groovy
     compile (':export:1.7-2.0.0-4') {
 		excludes 'bcprov-jdk14', 'bcmail-jdk14'    // to support birt-report:4.3 dependency hell
     }
 ```
+- Run grails. It may prompt you for plugin upgrade - say yes.
+
+**Option 3)** manual local/dev installation without maven:  
+
+- Get only .zip file [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-4)
+and simply unzip to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-4/```
+- add line somewhere at the top of your BuildConfig.groovy, outside of plugins scope:
+```
+grails.plugin.location.export="PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-4"
+```
+- Run grails.
+- For any dependency issues see BuildConfig.groovy in plugin directory.
