@@ -17,28 +17,23 @@ class ExcelNumberFormat extends ExcelFormat {
   }
 
   ExcelNumberFormat(WritableFont font) {
-    super(font)
-    formatter = NUMBER_FORMATTER
+    super(font, NUMBER_FORMATTER)
   }
 
   ExcelNumberFormat(String fontName=null) {
-    super(fontName)
-    formatter = NUMBER_FORMATTER
+    super(fontName, NUMBER_FORMATTER)
   }
 
   ExcelNumberFormat(DisplayFormat format) {
-    super(format)
-    formatter = NUMBER_FORMATTER
+    super(format, NUMBER_FORMATTER)
   }
 
   ExcelNumberFormat(WritableFont font, DisplayFormat format) {
-    super(font, format)
-    formatter = NUMBER_FORMATTER
+    super(font, format, NUMBER_FORMATTER)
   }
 
   ExcelNumberFormat(String fontName, DisplayFormat format) {
-    super(fontName, format)
-    formatter = NUMBER_FORMATTER
+    super(fontName, format, NUMBER_FORMATTER)
   }
 
 }

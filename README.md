@@ -16,6 +16,13 @@ A new branch will be spawned for every upgrade of base line (if it ever happens 
 
 What are the new features?
 -----------
+1.7-2.0.0-4:
+- All existing ExcelFormat constructors now handle formatters as well:
+```groovy
+new ExcelFormat(...){ domain, value -> ... }
+// or
+new ExcelFormat(..., { domain, value -> ... })
+```
 1.7-2.0.0-3:
 - Chained header and column formatting, like 
 ```groovy
@@ -28,6 +35,7 @@ It is possible to set that format for all headers ```"header.format":format``` a
 def textFormat = new ExcelFormat()
 def currencyFormat = new ExcelFormat(NumberFormats.ACCOUNTING_FLOAT)
 def dateTimeFormat = new ExcelFormat(DateFormats.FORMAT9)
+def customFormatter = new ExcelFormat().setFormatter { domain, value -> ... }
 ```
 - new interface to handle multiple sheets (only Excel implemented for now):
 ```groovy
@@ -65,7 +73,7 @@ exportService.export('excel', response.outputStream, myRows, fields, labels, for
 
 Installation or Upgrade:
 -----------
-Get .zip and .pom files [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-3)
+Get .zip and .pom files [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-4)
 Remove 'export:1.6' from your BuildConfig.groovy
 clean, run, watch for this notification:
 ```"Uninstalled plugin (export)"```
@@ -73,10 +81,10 @@ cancel once you see it... or wait to fail build because of the missing plugin.
 
 **Option 1)** local/dev installation:
 
-Simply unzip files to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-3/```
+Simply unzip files to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-4/```
 and add line somewhere at the top of your BuildConfig.groovy, outside of plugins scope
 ```
-grails.plugin.location.export="PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-3"
+grails.plugin.location.export="PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-4"
 ```
 For any dependency issues see BuildConfig.groovy in plugin directory.
 
@@ -90,18 +98,18 @@ grails install-plugin
 If you running Grails between v2.3 and 3.0, you should use maven itself.
 There is a script attached to release "install_plugin_export.bat" that basically automates the following process:
 ```
-mvn install:install-file -Dfile=export-1.7-2.0.0-3.zip -DgroupId=org.grails.plugins -DartifactId=export -Dversion=1.7-2.0.0-3 -Dpackaging=zip
+mvn install:install-file -Dfile=export-1.7-2.0.0-4.zip -DgroupId=org.grails.plugins -DartifactId=export -Dversion=1.7-2.0.0-4 -Dpackaging=zip
 ```
 go to folder
 ```
-Linux: ~/.m2/repository/org/grails/plugins/export/1.7-2.0.0-3/
-Windows: %HOMEPATH%\.m2\repository\org\grails\plugins\export\1.7-2.0.0-3\
+Linux: ~/.m2/repository/org/grails/plugins/export/1.7-2.0.0-4/
+Windows: %HOMEPATH%\.m2\repository\org\grails\plugins\export\1.7-2.0.0-4\
 ```
 and replace pom file with the one from release (If anyone knows how to integrate pom into zip - please let me know).
 
 Add new plugin to your BuildConfig.groovy normally:
-```
-    compile (':export:1.7-2.0.0-3') {
+```groovy
+    compile (':export:1.7-2.0.0-4') {
 		excludes 'bcprov-jdk14', 'bcmail-jdk14'    // to support birt-report:4.3 dependency hell
     }
 ```

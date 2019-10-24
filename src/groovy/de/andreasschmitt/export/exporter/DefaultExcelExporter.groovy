@@ -103,7 +103,7 @@ class DefaultExcelExporter extends AbstractExporter {
             maxPerSheet = maxPerSheet < MAX_PER_SHEET ? maxPerSheet : MAX_PER_SHEET
           }
 
-          processSheet(currentWorkbook, (title?:"Export") as String, sheetParams.rows as List, sheetParams.fields as List,
+          processSheet(currentWorkbook, (title?:"Export") as String, sheetParams.rows as List, sheetParams.fields as List,  sheetParams.labels as Map,
               isHeaderEnabled, useZebraStyle, widthAutoSize, maxPerSheet, sheetParams)
         }
       }
@@ -112,7 +112,7 @@ class DefaultExcelExporter extends AbstractExporter {
     builder.write()
   }
 
-  private void processSheet(ExcelBuilder workbook, String sheetName, List data, List fields,
+  private void processSheet(ExcelBuilder workbook, String sheetName, List data, List fields, Map labels,
                             boolean isHeaderEnabled, boolean useZebraStyle, boolean widthAutoSize, int maxPerSheet, Map sheetParams){
     def (sheets, limitPerSheet) = computeSheetsAndLimit(data, maxPerSheet)
     def startIndex = 0
@@ -121,14 +121,14 @@ class DefaultExcelExporter extends AbstractExporter {
       def dataPerSheet = data.subList(startIndex, endIndex)
 
       processMaxRowsPerSheet (workbook, sheetName + (sheets>1?"-$j":''),
-          dataPerSheet, fields, isHeaderEnabled, useZebraStyle, widthAutoSize, sheetParams)
+          dataPerSheet, fields, labels, isHeaderEnabled, useZebraStyle, widthAutoSize, sheetParams)
 
       startIndex = endIndex
       endIndex = endIndex + limitPerSheet > data.size() ? data.size() : endIndex + limitPerSheet
     }
   }
 
-  private void processMaxRowsPerSheet(ExcelBuilder workbook, String sheetName, List data, List fields,
+  private void processMaxRowsPerSheet(ExcelBuilder workbook, String sheetName, List data, List fields, Map labels,
                             boolean isHeaderEnabled, boolean useZebraStyle, boolean widthAutoSize, Map sheetParams){
     workbook.sheet (name: sheetName,
                     widths: sheetParams.get("column.widths"),
@@ -175,7 +175,7 @@ class DefaultExcelExporter extends AbstractExporter {
 
         fields.eachWithIndex { field, index ->
           def format = headerFormats?.get(index)?:headerFormat
-          String value = getLabel(field)
+          String value = labels.containsKey(field) ? labels[field] : field
           cell(row: rowIndex, column: index, value: value, format: format?:"header")
         }
 

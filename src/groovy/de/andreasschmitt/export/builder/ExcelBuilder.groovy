@@ -127,7 +127,7 @@ class ExcelBuilder extends BuilderSupport {
           sheet = workbook.createSheet(attributes?.name, workbook.getNumberOfSheets())
           if (attributes?.widthAutoSize!=false) {
             for (int i = 0; i < attributes.numberOfFields; i++) {
-              Integer width = !attributes.widths?.isEmpty() ? attributes.widths.getAt(i) : null
+              Integer width = attributes.widths!=null && !attributes.widths.isEmpty() ? attributes.widths.getAt(i) : null
               if (width!=null)
                 sheet.setColumnView(i, (width < 1.0 ? width * 100 : width) as int)
               else if (attributes?.widthAutoSize!=false)

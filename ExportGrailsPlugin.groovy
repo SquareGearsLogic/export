@@ -2,7 +2,7 @@ import org.apache.commons.logging.LogFactory
 
 class ExportGrailsPlugin {
     // the plugin version
-    def version = "1.7-2.0.0-3"
+    def version = "1.7-2.0.0-4"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "1.3 > *"
     // the other plugins this plugin depends on (use /grails-app/conf/BuildConfig.groovy instead!)

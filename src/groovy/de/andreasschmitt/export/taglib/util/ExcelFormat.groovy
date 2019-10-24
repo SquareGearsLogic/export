@@ -32,15 +32,16 @@ class ExcelFormat extends WritableCellFormat {
   static final H_ALIGNMENT = ['GENERAL','LEFT','CENTRE','RIGHT','FILL','H_AUTO']
   static final V_ALIGNMENT = ['TOP','MIDDLE','BOTTOM','V_AUTO']
 
-  private static final Closure NUMBER_FORMATTER = { domain, value ->
-    String strVal = "${value}".replace('fr.', '').replaceAll(/[^\d.]/, '')
-    return new BigDecimal(strVal ?: '0')
-  }
-
   private Closure formatter = null
 
   ExcelFormat(WritableFont font) {
     super({ return font ?: new WritableFont(WritableFont.ARIAL) }())
+    setup()
+  }
+
+  ExcelFormat(WritableFont font, Closure formatter) {
+    super({ return font ?: new WritableFont(WritableFont.ARIAL) }())
+    this.formatter = formatter
     setup()
   }
 
@@ -49,8 +50,26 @@ class ExcelFormat extends WritableCellFormat {
     setup()
   }
 
+  ExcelFormat(String fontName, Closure formatter) {
+    super(getFont(fontName))
+    this.formatter = formatter
+    setup()
+  }
+
+  ExcelFormat(Closure formatter) {
+    super(getFont(null))
+    this.formatter = formatter
+    setup()
+  }
+
   ExcelFormat(DisplayFormat format) {
     super(getFont(null), format)
+    setup()
+  }
+
+  ExcelFormat(DisplayFormat format, Closure formatter) {
+    super(getFont(null), format)
+    this.formatter = formatter
     setup()
   }
 
@@ -59,8 +78,20 @@ class ExcelFormat extends WritableCellFormat {
     setup()
   }
 
+  ExcelFormat(WritableFont font, DisplayFormat format, Closure formatter) {
+    super({ return font ?: new WritableFont(WritableFont.ARIAL) }(), format)
+    this.formatter = formatter
+    setup()
+  }
+
   ExcelFormat(String fontName, DisplayFormat format) {
     super(getFont(fontName), format)
+    setup()
+  }
+
+  ExcelFormat(String fontName, DisplayFormat format, Closure formatter) {
+    super(getFont(fontName), format)
+    this.formatter = formatter
     setup()
   }
 
