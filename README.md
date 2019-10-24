@@ -19,8 +19,6 @@ What are the new features?
 1.7-2.0.0-4:
 - All existing ExcelFormat constructors now handle formatters as well:
 ```groovy
-new ExcelFormat(...){ domain, value -> ... }
-// or
 new ExcelFormat(..., { domain, value -> ... })
 ```
 1.7-2.0.0-3:
@@ -35,7 +33,7 @@ It is possible to set that format for all headers ```"header.format":format``` a
 def textFormat = new ExcelFormat()
 def currencyFormat = new ExcelFormat(NumberFormats.ACCOUNTING_FLOAT)
 def dateTimeFormat = new ExcelFormat(DateFormats.FORMAT9)
-def customFormatter = new ExcelFormat().setFormatter { domain, value -> ... }
+dateTimeFormat.setFormatter { domain, value -> ... }
 ```
 - new interface to handle multiple sheets (only Excel implemented for now):
 ```groovy
