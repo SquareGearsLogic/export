@@ -46,9 +46,10 @@ class DefaultExcelExporter extends AbstractExporter {
       }
 
       String title = getParameters().get("title")
+      Map labels = fields.collectEntries{[it,getLabel(it)]}
       builder {
         workbook(outputStream: outputStream) {
-          processSheet(getDelegate() as ExcelBuilder, title, data, fields,
+          processSheet(getDelegate() as ExcelBuilder, title, data, fields, labels,
               isHeaderEnabled, useZebraStyle, widthAutoSize, maxPerSheet, getParameters())
         }
       }

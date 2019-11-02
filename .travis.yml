@@ -1,0 +1,11 @@
+language: groovy
+jdk:
+  - oraclejdk8
+  - openjdk8
+  - oraclejdk7
+  - openjdk7
+script:
+  - jdk_switcher use oraclejdk8
+  - jdk_switcher use openjdk8
+  - jdk_switcher use oraclejdk7
+  - jdk_switcher use openjdk7
