@@ -1,10 +1,17 @@
-language: groovy
 sudo: true
+addons:
+  chrome: stable
+before_cache:
+  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+language: groovy
 install:
   - true
-  
 jdk:
-  - openjdk8
+  - oraclejdk8
 
 branches:
   only:
