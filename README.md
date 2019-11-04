@@ -1,4 +1,4 @@
-Grails2 Export Plugin
+Grails2 Export Plugin [![Build Status](https://travis-ci.com/SquareGearsLogic/export.svg?branch=grails2-1.7-2.0.0)](https://travis-ci.com/SquareGearsLogic/export)
 ====================
 
 This is a forked merge of 
@@ -10,23 +10,25 @@ and
 
 Why?
 -----------
-Some Excel features of underlying library that I need are missing in this plugin or not implemented as I want, 
+Some Excel features of underlying [JXL 2.6.12](http://jexcelapi.sourceforge.net/) library that I need are missing in this plugin or not implemented as I want, 
 like pages, column styling, etc.  
-Also, I'm still working with grails 2, but latest features of 2.0.0, that works only with Grails3, are not backported to Grails2 version...  
+Also, latest features and bugfixes are only available for Grails3 version of the plugin, and not backported to Grails2 version...  
 So, first commit of this branch is a pure merge of dead 1.7 and latest 2.0.0.
 A new branch will be spawned for every upgrade of base line (if it ever happens at all).
 
 What are the new features?
 -----------
 1.7-2.0.0-5:
-- Back compatibility with original v1.6 in general but...
+- 1.6 was running since Grails 2.3.8, I'm using 2.5.3 for TravisCI.  
+If you don't like that - just change minimum version in application.properties file in your local maven.
+- There is back compatibility with original v1.6 in general but...
 - I see no reason why column autosizing is not turned-on by default: it perfectly resizes small columns, and doesn't resize large columns too much. So it's turned-on by default now. 
 - multiple sheets (only Excel implemented for now):
 ```groovy
 Map labels = ['someFieldName':'Some Field Name']
 List fields = ['someFieldName']
 Map sheets = ['first sheet title': [fields: fields, labels: labels, rows: listWithYourData,
-                                    "column.formats": [ someFieldName: (new ExcelFormat()).TIMES() ]]
+                                    "column.formats": [ someFieldName: (new ExcelFormat()).TIMES() ]],
               'another sheet': [rows: listWithOtherPageData]]
 
 exportService.export(mimeType, response, sheets)
@@ -48,7 +50,8 @@ dateTimeFormat.setFormatter { domain, value -> ... }
 def sameInOneLine = new ExcelFormat(DateFormats.FORMAT9, { domain, value -> ... })
 def fancyFormat = (new ExcelFormat()).TAHOMA().bold().noBold().struckout().VIOLET().italic().pointSize(10).wrapText().CENTRE().TOP().MINUS_45().backColor(Colour.AQUA).MIDDLE()
 ```
-It is possible to set that format for all headers ``"header.format":format`` and/or individually ``"header.formats": [1:column1headerFormat,5:column5headerFormat]`` 
+Read more about built-in Excel [date](http://jexcelapi.sourceforge.net/resources/javadocs/current/docs/jxl/write/DateFormats.html) and [number](http://jexcelapi.sourceforge.net/resources/javadocs/current/docs/jxl/write/NumberFormats.html) cell formats at JXL site.  
+Now it is possible to set that format for all headers ``"header.format":format`` and/or individually ``"header.formats": [1:column1headerFormat,5:column5headerFormat]``  
 - Change column size individually ``"column.widths": [null, 40]`` - here we set it only for second one, the rest will be autosized.
 - To disable autosizing set ``'column.width.autoSize':false`` 
 - Using Log4j
@@ -108,10 +111,10 @@ and replace pom file with the one from release (If anyone knows how to integrate
 **Option 3)** manual local/dev installation without maven:  
 
 - Get only .zip file [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-5)
-and simply unzip to ```PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-5/```
+and simply unzip to ```PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-5/```
 - add line somewhere at the top of your BuildConfig.groovy, outside of plugins scope:
 ```
-grails.plugin.location.export="PROJECT_DIR/.grails/projects/cwa/plugins/export-1.7-2.0.0-5"
+grails.plugin.location.export="PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-5"
 ```
 - Run grails.
 - For any dependency issues see BuildConfig.groovy in plugin directory.
