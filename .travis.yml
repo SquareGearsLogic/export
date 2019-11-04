@@ -8,6 +8,6 @@ branches:
     - grails2-1.7-2.0.0
     
 before_script:
-  - chmod +x grailsw.sh
+  - chmod +x grailsw
 
 scritp: ./grailsw "test-app -integration -echoOut"
