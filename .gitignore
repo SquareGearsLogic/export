@@ -4,5 +4,4 @@
 target
 web-app/WEB-INF
 *.iml
-export-*
 install_*
