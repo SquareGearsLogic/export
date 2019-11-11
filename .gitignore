@@ -1,0 +1,8 @@
+.idea
+.classpath
+.project
+target
+web-app/WEB-INF
+*.iml
+install_*
+mvn-repo/*.zip
