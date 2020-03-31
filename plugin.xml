@@ -1,4 +1,4 @@
-<plugin name='export' version='1.7-2.0.0-5' grailsVersion='1.3 &gt; *'>
+<plugin name='export' version='1.7-2.0.0-6' grailsVersion='1.3 &gt; *'>
   <author>Grails Plugin Collective</author>
   <authorEmail>grails.plugin.collective@gmail.com</authorEmail>
   <title>Export Plugin</title>

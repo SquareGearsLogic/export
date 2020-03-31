@@ -18,7 +18,7 @@ A new branch will be spawned for every upgrade of base line (if it ever happens 
 
 What are the new features?
 -----------
-1.7-2.0.0-5:
+1.7-2.0.0-6:
 - 1.6 was running since Grails 2.3.8, I'm using 2.5.3 for TravisCI.  
 If you don't like that - just change minimum version in application.properties file in your local maven.
 - There is back compatibility with original v1.6 in general but...
@@ -71,21 +71,26 @@ Since plugin name overlaps with original one, in order to migrate from original 
 
 - Simply add new plugin to your BuildConfig.groovy in "plugins" scope:
 ```groovy
-    compile ('org.sgl:export:1.7-2.0.0-5') {
-		excludes 'bcprov-jdk14', 'bcmail-jdk14'    // to support birt-report:4.3 dependency hell
+  repositories {
+    mavenRepo "https://dl.bintray.com/squaregearslogic/pub/"
+  }
+  plugins {
+    compile ('org.sgl:export:1.7-2.0.0-6') {
+      excludes 'bcprov-jdk14', 'bcmail-jdk14'    // to support birt-report:4.3 dependency hell
     }
+  }
 ```
-or in "dependencies" scope as ``org.sgl:export:zip:1.7-2.0.0-5``
+or in "dependencies" scope as ``org.sgl:export:zip:1.7-2.0.0-6``
 - Run grails.
 - For any dependency issues see BuildConfig.groovy in plugin directory.
 
 **Option 2)** manual local/dev installation without maven:  
 
-- Get only .zip file [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-5)
-and simply unzip to ```PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-5/```
+- Get only .zip file [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-6)
+and simply unzip to ```PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-6/```
 - add line somewhere at the top of your BuildConfig.groovy, outside of plugins scope:
 ```groovy
-grails.plugin.location.export="PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-5"
+grails.plugin.location.export="PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-6"
 ```
 - Run grails.
 - For any dependency issues see BuildConfig.groovy in plugin directory.
@@ -95,23 +100,23 @@ Your pom.xml should look like this:
 ```
 ...
   <repositories>
-	<repository>
-		<id>bintray-squaregearslogic-pub</id>
-		<url>https://dl.bintray.com/squaregearslogic/pub</url>
-		<releases>
-			<enabled>true</enabled>
-		</releases>
-		<snapshots>
-			<enabled>true</enabled>
-		</snapshots>
-	</repository>
+    <repository>
+      <id>bintray-squaregearslogic-pub</id>
+      <url>https://dl.bintray.com/squaregearslogic/pub</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
   </repositories>
   <dependencies>
     <dependency>
       <groupId>org.sgl</groupId>
       <artifactId>export</artifactId>
-      <version>1.7-2.0.0-5</version>
-	  <type>zip</type>
+      <version>1.7-2.0.0-6</version>
+      <type>zip</type>
       <scope>test</scope>
     </dependency>
   </dependencies>

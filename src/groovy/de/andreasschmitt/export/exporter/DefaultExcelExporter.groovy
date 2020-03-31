@@ -45,7 +45,7 @@ class DefaultExcelExporter extends AbstractExporter {
         maxPerSheet = maxPerSheet < MAX_PER_SHEET ? maxPerSheet : MAX_PER_SHEET
       }
 
-      String title = getParameters().get("title")
+      String title = getParameters().get("title")?:'Sheet'
       Map labels = fields.collectEntries{[it,getLabel(it)]}
       builder {
         workbook(outputStream: outputStream) {
