@@ -18,20 +18,21 @@ A new branch will be spawned for every upgrade of base line (if it ever happens 
 
 What are the new features?
 -----------
-1.7-2.0.0-6:
-- 1.6 was running since Grails 2.3.8, I'm using 2.5.3 for TravisCI.  
+1.7-2.0.0-7:
+- Plugin v1.6 was running since Grails 2.3.8, I'm using 2.5.3 for TravisCI.  
 If you don't like that - just change minimum version in application.properties file in your local maven.
 - There is back compatibility with original v1.6 in general but...
 - I see no reason why column autosizing is not turned-on by default: it perfectly resizes small columns, and doesn't resize large columns too much. So it's turned-on by default now. 
 - multiple sheets (only Excel implemented for now):
 ```groovy
+List listWithYourData = [[someFieldName: 42]]
 Map labels = ['someFieldName':'Some Field Name']
 List fields = ['someFieldName']
 Map sheets = ['first sheet title': [fields: fields, labels: labels, rows: listWithYourData,
                                     "column.formats": [ someFieldName: (new ExcelFormat()).TIMES() ]],
               'another sheet': [rows: listWithOtherPageData]]
 
-exportService.export(mimeType, response, sheets)
+exportService.export('excel', response, 'myReport', 'xls', sheets)
 // OR
 //setupResponse(type, response, filename, extension)
 //exportService.export(mimeType, response.outputStream, sheets)
@@ -50,11 +51,25 @@ dateTimeFormat.setFormatter { domain, value -> ... }
 def sameInOneLine = new ExcelFormat(DateFormats.FORMAT9, { domain, value -> ... })
 def fancyFormat = (new ExcelFormat()).TAHOMA().bold().noBold().struckout().VIOLET().italic().pointSize(10).wrapText().CENTRE().TOP().MINUS_45().backColor(Colour.AQUA).MIDDLE()
 ```
-Read more about built-in Excel [date](http://jexcelapi.sourceforge.net/resources/javadocs/current/docs/jxl/write/DateFormats.html) and [number](http://jexcelapi.sourceforge.net/resources/javadocs/current/docs/jxl/write/NumberFormats.html) cell formats at JXL site.  
-Now it is possible to set that format for all headers ``"header.format":format`` and/or individually ``"header.formats": [1:column1headerFormat,5:column5headerFormat]``  
+Here is the list of all supported formats:
+
+| What can be changed | Function Name |
+|-|-|
+| Fonts or .font(WritableFont.*) | ARIAL, TIMES, COURIER, TAHOMA |
+| Foreground Colours, or colour(Colour.*), or noColour() or .backColor(Colour.*) or noBackColor() | UNKNOWN, BLACK, WHITE, DEFAULT_BACKGROUND1, DEFAULT_BACKGROUND, PALETTE_BLACK, RED, BRIGHT_GREEN, BLUE, YELLOW, PINK, TURQUOISE, DARK_RED, GREEN, DARK_BLUE, DARK_YELLOW, VIOLET, TEAL, GREY_25_PERCENT, GREY_50_PERCENT, PERIWINKLE, PLUM2, IVORY, LIGHT_TURQUOISE2, DARK_PURPLE', CORAL, OCEAN_BLUE, ICE_BLUE, DARK_BLUE2, PINK2, YELLOW2, TURQOISE2, VIOLET2, DARK_RED2, TEAL2, BLUE2, SKY_BLUE, LIGHT_TURQUOISE, LIGHT_GREEN, VERY_LIGHT_YELLOW', PALE_BLUE, ROSE, LAVENDER, TAN, LIGHT_BLUE, AQUA, LIME, GOLD, LIGHT_ORANGE, ORANGE, BLUE_GREY, GREY_40_PERCENT, DARK_TEAL, SEA_GREEN, DARK_GREEN, OLIVE_GREEN, BROWN, PLUM, INDIGO, GREY_80_PERCENT, AUTOMATIC, GRAY_80, GRAY_50, GRAY_25 |
+| Orientations | HORIZONTAL, VERTICAL, PLUS_90, MINUS_90, PLUS_45, MINUS_45, STACKED |
+| Horizontal Alignment | GENERAL, LEFT, CENTRE, RIGHT, FILL, H_AUTO |
+| Vertical Alignment | TOP, MIDDLE, BOTTOM, V_AUTO |
+| Font Weight | pointSize(int)/defaultSize, bold/noBold, struckout/noStruckout, italic/noItalic, underline/underlineSingle/underlineSingleAccounting/underlineDouble/underlineDoubleAccounting/noUnderline |
+| Wrappers | wrapText/noWrapText, ident, lock/unlock, srink/expand |
+
+(Learn more about built-in Excel [date](http://jexcelapi.sourceforge.net/resources/javadocs/current/docs/jxl/write/DateFormats.html) and [number](http://jexcelapi.sourceforge.net/resources/javadocs/current/docs/jxl/write/NumberFormats.html) cell formats at JXL site)
+
+It is now possible to set that format for all headers ``"header.format":format`` and/or individually ``"header.formats": [1:column1headerFormat,5:column5headerFormat]``  
 - Change column size individually ``"column.widths": [null, 40]`` - here we set it only for second one, the rest will be autosized.
 - To disable autosizing set ``'column.width.autoSize':false`` 
 - Using Log4j
+- Debug logging can be activated py passing "isDebug=true" within "old style parameters" or with sheet params.
 
 1.7-2.0.0-1: 
 - initial merge of 1.7 and 2.0.0
@@ -75,22 +90,22 @@ Since plugin name overlaps with original one, in order to migrate from original 
     mavenRepo "https://dl.bintray.com/squaregearslogic/pub/"
   }
   plugins {
-    compile ('org.sgl:export:1.7-2.0.0-6') {
+    compile ('org.sgl:export:1.7-2.0.0-7') {
       excludes 'bcprov-jdk14', 'bcmail-jdk14'    // to support birt-report:4.3 dependency hell
     }
   }
 ```
-or in "dependencies" scope as ``org.sgl:export:zip:1.7-2.0.0-6``
+or in "dependencies" scope as ``org.sgl:export:zip:1.7-2.0.0-7``
 - Run grails.
 - For any dependency issues see BuildConfig.groovy in plugin directory.
 
 **Option 2)** manual local/dev installation without maven:  
 
-- Get only .zip file [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-6)
-and simply unzip to ```PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-6/```
+- Get only .zip file [from latest release](https://github.com/SquareGearsLogic/export/releases/tag/1.7-2.0.0-7)
+and simply unzip to ```PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-7/```
 - add line somewhere at the top of your BuildConfig.groovy, outside of plugins scope:
 ```groovy
-grails.plugin.location.export="PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-6"
+grails.plugin.location.export="PROJECT_DIR/.grails/projects/PROJECT_NAME/plugins/export-1.7-2.0.0-7"
 ```
 - Run grails.
 - For any dependency issues see BuildConfig.groovy in plugin directory.
@@ -115,7 +130,7 @@ Your pom.xml should look like this:
     <dependency>
       <groupId>org.sgl</groupId>
       <artifactId>export</artifactId>
-      <version>1.7-2.0.0-6</version>
+      <version>1.7-2.0.0-7</version>
       <type>zip</type>
       <scope>test</scope>
     </dependency>

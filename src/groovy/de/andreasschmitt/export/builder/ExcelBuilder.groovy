@@ -53,6 +53,7 @@ import jxl.write.WritableHyperlink
 
 @Log4j
 class ExcelBuilder extends BuilderSupport {
+  Boolean isDebug = false
 
   WritableWorkbook workbook
   WritableSheet sheet
@@ -60,6 +61,10 @@ class ExcelBuilder extends BuilderSupport {
   String format
   Map formats = [:]
 
+  ExcelBuilder(){}
+  ExcelBuilder(Boolean isDebug){
+    this.isDebug = isDebug
+  }
   /**
    * This method isn't implemented.
    */
@@ -74,9 +79,10 @@ class ExcelBuilder extends BuilderSupport {
    *
    */
   protected Object createNode(Object name) {
-    log.debug("createNode(Object name)")
-    log.debug("name: ${name}")
-
+    if (isDebug) {
+      log.debug("createNode(Object name)")
+      log.debug("name: ${name}")
+    }
     if (name == "write") {
       this.write()
     }
@@ -88,8 +94,10 @@ class ExcelBuilder extends BuilderSupport {
    * This method isn't implemented.
    */
   protected Object createNode(Object name, Object value) {
-    log.debug("createNode(Object name, Object value)")
-    log.debug("name: ${name} value: ${value}")
+    if (isDebug) {
+      log.debug("createNode(Object name, Object value)")
+      log.debug("name: ${name} value: ${value}")
+    }
     return null
   }
 
@@ -103,15 +111,18 @@ class ExcelBuilder extends BuilderSupport {
    *
    */
   protected Object createNode(Object name, Map attributes) {
-    log.debug("createNode(Object name, Map attributes)")
-    log.debug("name: ${name} attributes: ${attributes}")
+    if (isDebug) {
+      log.debug("createNode(Object name, Map attributes)")
+      log.debug("name: ${name} attributes: ${attributes}")
+    }
 
     switch (name) {
     // Workbook, the Excel document as such
       case "workbook":
         if (attributes?.outputStream) {
           try {
-            log.debug("Creating workbook")
+            if (isDebug)
+              log.debug("Creating workbook")
             workbook = Workbook.createWorkbook(attributes?.outputStream)
           }
           catch (Exception e) {
@@ -123,7 +134,8 @@ class ExcelBuilder extends BuilderSupport {
     // Sheet, an Excel file can contain multiple sheets which are typically shown as tabs
       case "sheet":
         try {
-          log.debug("Creating sheet")
+          if (isDebug)
+            log.debug("Creating sheet")
           sheet = workbook.createSheet(attributes?.name, workbook.getNumberOfSheets())
           if (attributes?.widthAutoSize!=false) {
             for (int i = 0; i < attributes.numberOfFields; i++) {
@@ -145,13 +157,16 @@ class ExcelBuilder extends BuilderSupport {
         try {
           CellValue value
           if (attributes?.value instanceof java.lang.Number) {
-            log.debug("Creating number cell")
+            if (isDebug)
+              log.debug("Creating number cell")
             value = new Number(attributes?.column, attributes?.row, attributes?.value)
           } else if (attributes?.value instanceof Date) {
-            log.debug("Creating date cell")
+            if (isDebug)
+              log.debug("Creating date cell")
             value = new DateTime(attributes?.column, attributes?.row, attributes?.value)
           } else {
-            log.debug("Creating label cell")
+            if (isDebug)
+              log.debug("Creating label cell")
             value = new Label(attributes?.column, attributes?.row, attributes?.value?.toString())
           }
 
@@ -164,7 +179,8 @@ class ExcelBuilder extends BuilderSupport {
 
           // Create hyperlinks for values beginning with http
           if (attributes?.value?.toString()?.toLowerCase()?.startsWith('http://') || attributes?.value?.toString()?.toLowerCase()?.startsWith('https://')) {
-            log.debug("Changing cell to Hyperlink")
+            if (isDebug)
+              log.debug("Changing cell to Hyperlink")
             def link = new WritableHyperlink(attributes?.column, attributes?.row, new URL(attributes?.value?.toString()))
             link.setDescription(attributes?.value?.toString() ?: 'no URL')
             sheet.addHyperlink(link)
@@ -185,7 +201,8 @@ class ExcelBuilder extends BuilderSupport {
 
       case "font":
         try {
-          log.debug("attributes: ${attributes}")
+          if (isDebug)
+            log.debug("attributes: ${attributes}")
 
           attributes.name = attributes?.name ? attributes?.name : "arial"
           attributes.italic = attributes?.italic ? attributes?.italic : false
@@ -212,8 +229,8 @@ class ExcelBuilder extends BuilderSupport {
           if (fontname.containsKey(attributes.name)) {
             attributes.name = fontname[attributes.name]
           }
-
-          log.debug("attributes: ${attributes}")
+          if (isDebug)
+            log.debug("attributes: ${attributes}")
 
           WritableFont font = new WritableFont(attributes.name, attributes["size"], attributes.bold, attributes.italic, attributes.underline)
           font.colour = attributes.foreColor
@@ -231,7 +248,8 @@ class ExcelBuilder extends BuilderSupport {
         }
         break
       case "mergeCells":
-        log.debug("attributes: ${attributes}")
+        if (isDebug)
+          log.debug("attributes: ${attributes}")
         try {
           sheet.mergeCells(attributes?.startColumn, attributes?.startRow, attributes?.endColumn, attributes?.endRow)
         } catch (Exception ex) {
@@ -247,8 +265,10 @@ class ExcelBuilder extends BuilderSupport {
    * This method isn't implemented.
    */
   protected Object createNode(Object name, Map attributes, Object value) {
-    log.debug("createNode(Object name, Map attributes, Object value)")
-    log.debug("name: ${name} attributes: ${attributes}, value: ${value}")
+    if (isDebug) {
+      log.debug("createNode(Object name, Map attributes, Object value)")
+      log.debug("name: ${name} attributes: ${attributes}, value: ${value}")
+    }
     return null
   }
 
@@ -256,7 +276,8 @@ class ExcelBuilder extends BuilderSupport {
    * Finish writing the document.
    */
   void write() {
-    log.debug("Writing document")
+    if (isDebug)
+      log.debug("Writing document")
 
     try {
       workbook.write()

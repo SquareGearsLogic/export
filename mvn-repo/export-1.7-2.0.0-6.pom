@@ -5,7 +5,7 @@
   <groupId>org.sgl</groupId>
   <artifactId>export</artifactId>
   <packaging>zip</packaging>
-  <version>1.7-2.0.0-6</version>
+  <version>1.7-2.0.0-7</version>
   <name>Export Plugin</name>
   <description>This plugin offers export functionality supporting different formats e.g. CSV, Excel, Open Document Spreadsheet, PDF and XML 
 and can be extended to add additional formats. 

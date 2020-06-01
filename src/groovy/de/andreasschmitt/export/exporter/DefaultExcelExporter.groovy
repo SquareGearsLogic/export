@@ -24,7 +24,7 @@ class DefaultExcelExporter extends AbstractExporter {
    */
   protected void exportData(OutputStream outputStream, List data, List fields) throws ExportingException {
     try {
-      ExcelBuilder builder = new ExcelBuilder()
+      ExcelBuilder builder = new ExcelBuilder(this.parameters.isDebug)
 
       // Enable/Disable header output
       boolean isHeaderEnabled = true
@@ -81,7 +81,8 @@ class DefaultExcelExporter extends AbstractExporter {
    * @throws ExportingException
    */
   protected void exportSheets(OutputStream outputStream, Map sheets) throws ExportingException {
-    ExcelBuilder builder = new ExcelBuilder()
+    Boolean isDebug = sheets.find { title, Map sheetParams -> sheetParams.isDebug }
+    ExcelBuilder builder = new ExcelBuilder(isDebug)
     builder {
       workbook(outputStream: outputStream) {
         ExcelBuilder currentWorkbook = getDelegate()
@@ -208,7 +209,7 @@ class DefaultExcelExporter extends AbstractExporter {
 
   }
 
-  private static List computeSheetsAndLimit(List data, maxPerSheet) {
+  private static List computeSheetsAndLimit(List data, Integer maxPerSheet) {
     if (!data)
       throw new ExportingException("Error during export: Empty data!")
 
